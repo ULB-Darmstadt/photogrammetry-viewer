@@ -31,6 +31,7 @@ srcScanInformation | Exported cameras in xml file from Agisoft
 src3D | 3D model in gltf file format
 src2D | Path where all 2D images are located. Currently these must be in png format.
 loadMeasurement | If this attribute is set, the viewer will try to load measurement data from the file `measurement.json` located in the same path as the GLTF file. See section [Measurements](#Measurements)
+viewSettings | An object with additional settings to adjust the viewer. Currently, it may have a property `skyBoxImage` with an URL to the image to be used for the sky-box in the 3D viewer, and a method `async resolve2dFileURL(key: string)`, that resolves the identifier from the XML file to an URL of the 2D image.
 
 ## Measurements
 

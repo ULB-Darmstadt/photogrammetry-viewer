@@ -2,13 +2,13 @@
   "name": "@ulb-darmstadt/photogrammetry-viewer",
   "version": "0.0.10",
   "type": "module",
-  "main": "dist/photogrammetry-viewer.js",
-  "module": "dist/photogrammetry-viewer.js",
+  "main": "dist/photogrammetry-without-modelviewer.js",
+  "module": "dist/photogrammetry-without-modelviewer.js",
   "types": "dist/index.d.ts",
   "exports": {
     ".": {
-      "import": "./dist/photogrammetry-viewer.js",
-      "require": "./dist/photogrammetry-viewer.js"
+      "import": "./dist/photogrammetry-viewer-without-modelviewer.js",
+      "require": "./dist/photogrammetry-without-modelviewer.js"
     }
   },
   "files": [
