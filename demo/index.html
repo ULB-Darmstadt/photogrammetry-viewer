@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>Photogrammetry Viewer Demo</title>
+        <script src="https://cdn.jsdelivr.net/npm/@ulb-darmstadt/photogrammetry-viewer/dist/photogrammetry-viewer.js" type="module"></script>
+        <style>
+            body { font-family: sans-serif; color: #008877; }
+            a:visited { color: inherit; }
+        </style>
+    </head>
+    <body>
+        <h3>Source code available on <a href="https://github.com/ULB-Darmstadt/photogrammetry-viewer">https://github.com/ULB-Darmstadt/photogrammetry-viewer</a></h3>
+        <photogrammetry-viewer isYupTransformApplied
+            srcScanInformation="https://next.hessenbox.de/public.php/dav/files/wFkPMydZd8jPCQ8/Leptinotarsa_decemlineata_NOKI_metashape_cameras.xml"
+            src3D="https://next.hessenbox.de/public.php/dav/files/wFkPMydZd8jPCQ8/Yup.gltf"
+            src2D="https://next.hessenbox.de/public.php/dav/files/wFkPMydZd8jPCQ8/edof/">
+        </photogrammetry-viewer>
+    </body>
+</html>
