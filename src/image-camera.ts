@@ -20,32 +20,16 @@ export class ImageCamera extends EventEmitter {
 
   private _camPosesInChunk: Array<Matrix4> = [];
   private _chunkToWorldTransform: Matrix4 = new Matrix4();
-  private _isYupTransformApplied: boolean = true;
   private _additionalRotation: Matrix4 = new Matrix4();
 
-  init(
-      scanInformation: ScanInformation,
-      isYupTransformApplied: boolean,
-      additionalRotation: Euler,
-  ) {
+  init(scanInformation: ScanInformation, additionalRotation: Euler) {
     this._sensorMap = scanInformation.sensorMap;
     this._sensorIds = scanInformation.sensorIds;
 
     this._camPosesInChunk = scanInformation.camPosesInChunk;
     this._chunkToWorldTransform = scanInformation.transformationChunkToWorld;
-    this._isYupTransformApplied = isYupTransformApplied;
-    this._additionalRotation =
-      this._additionalRotation.makeRotationFromEuler(additionalRotation);
+    this._additionalRotation = this._additionalRotation.makeRotationFromEuler(additionalRotation);
     this._calculateCamPosesInWorldCoor();
-  }
-
-  setIsYupTransformApplied(isYupTransformApplied: boolean): void {
-    if (isYupTransformApplied == this._isYupTransformApplied) {
-      return;
-    }
-    this._isYupTransformApplied = isYupTransformApplied;
-    this._calculateCamPosesInWorldCoor();
-    this.emit('camera-parameters-changed');
   }
 
   setAdditionalRotation(additionalRotation: EulerYXZ): void {
@@ -77,11 +61,8 @@ export class ImageCamera extends EventEmitter {
     }
   }
 
-  getSyncSettingsOfNextBestImage(
-      viewerCamera: Camera,
-  ): [Settings2DViewer, Settings3DViewer] | [null, null] {
-    const current3DCamPosition = viewerCamera.position;
-    let normed3DCamPosition = current3DCamPosition.clone().normalize();
+  getSyncSettingsOfNextBestImage(viewerCamera: Camera): [Settings2DViewer, Settings3DViewer] | [null, null] {
+    let normed3DCamPosition = viewerCamera.position.clone().normalize();
     normed3DCamPosition = new Vector3(
         normed3DCamPosition.getComponent(this._remapCoordinates.getComponent(0)),
         normed3DCamPosition.getComponent(this._remapCoordinates.getComponent(1)),
@@ -92,10 +73,7 @@ export class ImageCamera extends EventEmitter {
     let minAngle = Number.MAX_VALUE;
     let idxMinAngle = -1;
     for (let i = 0; i < this.normedPositions.length; i++) {
-      if (
-        typeof this.normedPositions[i] === 'undefined' ||
-        this.normedPositions[i] === null
-      ) {
+      if (typeof this.normedPositions[i] === 'undefined' || this.normedPositions[i] === null) {
         continue;
       }
       const angle = Math.acos(normed3DCamPosition.dot(this.normedPositions[i])); // faster than .angleTo, as the vectors are already normalised
@@ -209,13 +187,10 @@ export class ImageCamera extends EventEmitter {
 
   private _calculateCamPosesInWorldCoor(): void {
     const transformationChunkToWorldYUp = this._chunkToWorldTransform.clone();
+    const transformationZupToYup = new Matrix4();
+    transformationZupToYup.makeRotationX(-Math.PI * 0.5);
 
-    if (this._isYupTransformApplied) {
-      const transformationZupToYup = new Matrix4();
-      transformationZupToYup.makeRotationX(-Math.PI * 0.5);
-
-      transformationChunkToWorldYUp.premultiply(transformationZupToYup);
-    }
+    transformationChunkToWorldYUp.premultiply(transformationZupToYup);
 
     const tmpPos = new Vector3();
     const tmpQuart = new Quaternion();
@@ -255,7 +230,6 @@ export class ImageCamera extends EventEmitter {
     }
 
     console.log('Calculated camera poses in world coordinates', {
-      transformationChunkToWorldYUp: transformationChunkToWorldYUp,
       camPosesInChunk: this._camPosesInChunk,
       normedPoses: this.normedPositions,
       poses: this.poses,

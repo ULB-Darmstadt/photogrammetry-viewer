@@ -100,6 +100,7 @@ export class ViewerElement3D extends ModelViewerElement {
 
     this.addEventListener('load', this._handleModelLoaded);
     this.addEventListener('camera-change', this._handleCameraChanged);
+    this.orientation = '0deg -90deg 0deg'
 
     const singleClickEventHandler = new SingleClickEventHandler(this);
     singleClickEventHandler.on(

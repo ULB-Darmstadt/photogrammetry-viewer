@@ -29,10 +29,6 @@ import {Vector3} from 'three';
 
 @customElement('photogrammetry-viewer')
 export class PhotogrammetryViewer extends LitElement {
-  // zup to yup applied
-  @property({type: Boolean})
-  isYupTransformApplied: boolean = false;
-
   // src file names:
   @property()
   src3D: string = ''; // 'http://localhost:8000/3D/Yup.gltf';
@@ -208,10 +204,6 @@ export class PhotogrammetryViewer extends LitElement {
       });
     }
 
-    if (changedProperties.has('isYupTransformApplied')) {
-      this._imageCamera.setIsYupTransformApplied(this.isYupTransformApplied);
-    }
-
     if (
       changedProperties.has('src2D') &&
       this.viewSettings instanceof DefaultPhotogrammetryViewerSettings
@@ -260,7 +252,6 @@ export class PhotogrammetryViewer extends LitElement {
   private _handleScanInformationExtracted(): void {
     this._imageCamera.init(
         this._scanInformation,
-        this.isYupTransformApplied,
         this._viewerSettings.modelOrientation.eulerOrientationYXZInRad.angleInRad,
     );
     this.viewer2DElement.setImageFiles(this._scanInformation.imageFiles);
