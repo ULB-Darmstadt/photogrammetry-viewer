@@ -40,6 +40,8 @@ export class ViewerElement2D extends LitElement {
 
   private _imageFiles: Array<string> = [];
   private _currentImageIdx: number = -1;
+  private _loadingImageIdx: number = -1;
+  private _pendingImageLoad: Promise<void> | null = null;
   private _currentSyncRotationAngle: number = 0;
 
   private _imageCenter: OpenSeadragon.Point = new OpenSeadragon.Point(0, 0);
@@ -208,24 +210,47 @@ export class ViewerElement2D extends LitElement {
       return;
     }
 
-    if (this._currentImageIdx == imageIdx) {
+    if (this._currentImageIdx == imageIdx && this._pendingImageLoad == null) {
       return;
     }
 
-    this._currentImageIdx = imageIdx;
+    if (this._loadingImageIdx == imageIdx && this._pendingImageLoad != null) {
+      await this._pendingImageLoad;
+      return;
+    }
 
     if (this._viewer == null) {
       return;
     }
 
     const imageUrl = await this.viewSettings.resolve2dFileURL(
-        this._imageFiles[this._currentImageIdx],
+        this._imageFiles[imageIdx],
     );
 
-    this._viewer.open({
-      type: 'image',
-      url: imageUrl,
+    this._loadingImageIdx = imageIdx;
+    this._pendingImageLoad = new Promise<void>((resolve) => {
+      if (this._viewer == null) {
+        this._loadingImageIdx = -1;
+        this._pendingImageLoad = null;
+        resolve();
+        return;
+      }
+
+      const finishImageLoad = () => {
+        this._currentImageIdx = imageIdx;
+        this._loadingImageIdx = -1;
+        this._pendingImageLoad = null;
+        resolve();
+      };
+
+      this._viewer.addOnceHandler('open', finishImageLoad);
+      this._viewer.addOnceHandler('open-failed', finishImageLoad);
+      this._viewer.open({
+        type: 'image',
+        url: imageUrl,
+      });
     });
+    await this._pendingImageLoad;
 
     console.log('Loaded image', imageUrl);
   }

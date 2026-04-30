@@ -1,6 +1,6 @@
 {
   "name": "@ulb-darmstadt/photogrammetry-viewer",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "type": "module",
   "main": "dist/photogrammetry-without-modelviewer.js",
   "module": "dist/photogrammetry-without-modelviewer.js",

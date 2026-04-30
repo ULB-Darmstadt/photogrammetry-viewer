@@ -75,6 +75,8 @@ export class PhotogrammetryViewer extends LitElement {
 
   private _isColumnDir: boolean = false;
 
+  private _viewerUpdateToken: number = 0;
+
   private _resizeObserver: ResizeObserver;
 
   constructor() {
@@ -182,6 +184,8 @@ export class PhotogrammetryViewer extends LitElement {
 
   firstUpdated() {
     this._resizeObserver.observe(this.viewerBase);
+    this._updateViewerSize();
+    requestAnimationFrame(() => this._updateViewerSize());
     this.viewer2DElement.connectWithSettings(this._viewerSettings);
     this.viewer3DElement.connectWithSettings(this._viewerSettings);
     this._viewerSettings.viewer2DElement = this.viewer2DElement;
@@ -414,7 +418,8 @@ export class PhotogrammetryViewer extends LitElement {
     }
   }
 
-  private _updateViewer(): void {
+  private async _updateViewer(): Promise<void> {
+    const updateToken = ++this._viewerUpdateToken;
     const cam3DViewer = this.viewer3DElement.getCamera();
     [this._syncSettings2DViewer, this._syncSettings3DViewer] =
       this._imageCamera.getSyncSettingsOfNextBestImage(cam3DViewer);
@@ -430,7 +435,11 @@ export class PhotogrammetryViewer extends LitElement {
       this._syncSettings2DViewer.rotationAngle;
 
     const currentImageIdx = this._syncSettings2DViewer.imageIdx;
-    this.viewer2DElement.loadNextImage(currentImageIdx);
+    await this.viewer2DElement.loadNextImage(currentImageIdx);
+
+    if (updateToken != this._viewerUpdateToken) {
+      return;
+    }
 
     const currentSensor = this._imageCamera.getImageSensor(currentImageIdx);
     if (currentSensor == null) {
