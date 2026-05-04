@@ -35,3 +35,7 @@ viewSettings | An object with additional settings to adjust the viewer. Currentl
 ## Measurements
 
 Measurements can be downloaded as CSV or JSON from within the measurement tool. In conjunction with the attribute `loadMeasurement`, the JSON file can be used to annotate the 3D model.
+
+## Funding Acknowledgement
+
+Funded by the German Research Foundation (DFG) within the project " Three-dimensional digitization of insect collections - multi-view imaging and photogrammetric surface reconstruction", Project number: [495869174](https://gepris.dfg.de/gepris/projekt/495869174?language=en)
